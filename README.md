@@ -38,4 +38,60 @@ To submit a solution, fork this repo and send a Pull Request on Github.
 
 For any questions or clarifications, raise an issue on this repo and we'll answer your questions as fast as we can.
 
+## Solution Description
+The service starts an HTTP server to listen to incoming requests for creating distributors. It expects to receive the distributor data from POST request in the JSON format as given below:
+```
+{
+  "name": "DISTRIBUTOR2",
+        "inherits": "DISTRIBUTOR1",
+        "include": ["IN"],
+        "exclude": ["JK:IN"]
+}
+```
+The location codes follow the format `<city>:<province>:<country>`. To include the entire province or country, codes such as `<province>:<country>` or `<country>` could be used.
 
+The service can handle GET and POST requests currently, to perform the following operations:
+1. GET requests: Can be used to query whether a distributor has access to a certain location code.
+2. POST requests: Can be used to create new distributors. It returns a JSON response containing the data it has stored. It weeds out any locations the distributor cannot have access to.
+
+In future following requests could also be implemented:
+1. PATCH request: Can be used to update the include or exclude lists of a distributor
+2. PUT request: Can be used to replace the existing distributor
+
+### Limitations:
+Currently, a distributor cannot be updated once it is created via POST request. 
+
+### GET request example
+```
+curl "http://localhost:8080/distributor?distributor=DISTRIBUTOR1&location=UDHAP:JK:IN"
+```
+
+### POST request example
+```
+curl -X POST http://localhost:8080/distributor -H "Content-Type: application/json" -d '{
+  "name": "DISTRIBUTOR1",
+    "include": ["IN", "WS"],
+    "exclude": ["UP:IN", "YAVTM:MH:IN"]
+}'
+```
+
+### Expected responses
+StatusOK - 200 : Distributor can access the given location
+StatusCreated - 201 : Successfully created Distributor
+StatusNotFound - 404 : Distributor not found
+StatusForbidden - 403 :  Distributor cannot access the given location
+StatusBadRequest - 400 : Received invalid JSON input
+StatusConflict - 409 : Distributor already exists
+StatusInternalServerError - 500 : Error occurred while returning response
+
+## Run Unit tests
+
+Unit tests can be run using the command:
+go test
+
+## Bulk/Stress test:
+
+The script test.py can be used as follows:
+python3 test.py
+
+This script can be used to generate a chain of 50 distributors by default. Script can be modified to test more number of distributors or increasing the number of cities being included by the distributors.
