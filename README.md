@@ -58,6 +58,19 @@ In future following requests could also be implemented:
 1. PATCH request: Can be used to update the include or exclude lists of a distributor
 2. PUT request: Can be used to replace the existing distributor
 
+
+### Running the service locally
+To run the service locally, use the command:
+```
+go run all
+```
+
+The following message will be visible on the terminal if the server starts successfully:
+```
+challenge2016>go run all
+Starting server on :8080...
+```
+
 ### Limitations:
 Currently, a distributor cannot be updated once it is created via POST request. 
 
